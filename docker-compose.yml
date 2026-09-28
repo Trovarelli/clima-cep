@@ -1,0 +1,12 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: clima-cep-app
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - WEATHER_API_KEY=${WEATHER_API_KEY:-}
+    restart: unless-stopped

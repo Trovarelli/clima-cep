@@ -1,0 +1,38 @@
+### Variáveis de ambiente locais
+@baseUrl = http://localhost:8080
+
+### 1. Health check
+GET {{baseUrl}}/health
+Accept: application/json
+
+### 2. Sucesso - Cenário 1 (200 OK) - Rota via path /clima/{cep}
+GET {{baseUrl}}/clima/01001000
+Accept: application/json
+
+### 3. Sucesso - Cenário 1 (200 OK) - Rota via raiz /{cep}
+GET {{baseUrl}}/01001000
+Accept: application/json
+
+### 4. Sucesso - Cenário 1 (200 OK) - Rota via query param /clima?cep={cep}
+GET {{baseUrl}}/clima?cep=01001000
+Accept: application/json
+
+### 5. Sucesso - Cenário 1 (200 OK) - Rota via query param raiz /?cep={cep}
+GET {{baseUrl}}/?cep=01001000
+Accept: application/json
+
+### 6. Erro - Cenário Formato Inválido (422 Unprocessable Entity - Menos de 8 dígitos)
+GET {{baseUrl}}/clima/1234567
+Accept: application/json
+
+### 7. Erro - Cenário Formato Inválido (422 Unprocessable Entity - Com hífen)
+GET {{baseUrl}}/clima/01001-000
+Accept: application/json
+
+### 8. Erro - Cenário Formato Inválido (422 Unprocessable Entity - Com letras)
+GET {{baseUrl}}/clima/01001A00
+Accept: application/json
+
+### 9. Erro - Cenário CEP Não Encontrado (404 Not Found - CEP válido mas inexistente)
+GET {{baseUrl}}/clima/99999999
+Accept: application/json
