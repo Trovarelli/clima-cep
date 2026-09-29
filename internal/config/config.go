@@ -6,13 +6,11 @@ import (
 	"strings"
 )
 
-// Config armazena as configurações da aplicação.
 type Config struct {
 	Port          string
 	WeatherAPIKey string
 }
 
-// LoadConfig carrega as variáveis de ambiente, com fallback para arquivo .env se existir.
 func LoadConfig() *Config {
 	loadDotEnv(".env")
 
@@ -32,7 +30,6 @@ func LoadConfig() *Config {
 	}
 }
 
-// loadDotEnv lê um arquivo .env simples (chave=valor) caso exista e define as variáveis se não estiverem presentes no ambiente.
 func loadDotEnv(filepath string) {
 	file, err := os.Open(filepath)
 	if err != nil {

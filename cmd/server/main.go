@@ -41,7 +41,6 @@ func main() {
 		IdleTimeout:       60 * time.Second,
 	}
 
-	// Canal para captura de sinais de encerramento do sistema operacional
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 

@@ -15,32 +15,25 @@ import (
 const defaultBaseURL = "https://api.weatherapi.com/v1"
 
 var (
-	// ErrLocationNotFound é retornado quando a WeatherAPI não localiza a cidade informada.
 	ErrLocationNotFound = errors.New("can not find zipcode")
-	// ErrMissingAPIKey é retornado se a chave da WeatherAPI não estiver configurada.
-	ErrMissingAPIKey = errors.New("chave da WeatherAPI nao configurada")
-	// ErrUpstreamError é retornado para falhas de comunicação ou respostas inválidas da WeatherAPI.
-	ErrUpstreamError = errors.New("erro de comunicacao com a weatherapi")
+	ErrMissingAPIKey    = errors.New("chave da WeatherAPI nao configurada")
+	ErrUpstreamError    = errors.New("erro de comunicacao com a weatherapi")
 )
 
-// HTTPClient define a interface para o cliente HTTP.
 type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-// ClientInterface define o contrato para consulta da temperatura atual.
 type ClientInterface interface {
 	GetCurrentTemperatureCelsius(ctx context.Context, city string) (float64, error)
 }
 
-// Client é o cliente para consulta à WeatherAPI.
 type Client struct {
 	httpClient HTTPClient
 	baseURL    string
 	apiKey     string
 }
 
-// NewClient cria uma nova instância de Client para a WeatherAPI.
 func NewClient(httpClient HTTPClient, baseURL, apiKey string) *Client {
 	if httpClient == nil {
 		httpClient = &http.Client{Timeout: 10 * time.Second}
@@ -66,7 +59,6 @@ type weatherAPIResponse struct {
 	} `json:"error"`
 }
 
-// GetCurrentTemperatureCelsius consulta a temperatura atual em Celsius para a cidade especificada.
 func (c *Client) GetCurrentTemperatureCelsius(ctx context.Context, city string) (float64, error) {
 	if c.apiKey == "" {
 		return 0, ErrMissingAPIKey
@@ -110,7 +102,6 @@ func (c *Client) GetCurrentTemperatureCelsius(ctx context.Context, city string) 
 	}
 
 	if resp.StatusCode == http.StatusBadRequest || resp.StatusCode == http.StatusNotFound {
-		// Código 1006 no WeatherAPI = No matching location found
 		if res.Error != nil && res.Error.Code == 1006 {
 			return 0, ErrLocationNotFound
 		}

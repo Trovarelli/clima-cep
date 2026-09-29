@@ -12,18 +12,15 @@ import (
 	"clima-cep/internal/usecase"
 )
 
-// WeatherUseCase define a interface que o handler precisa para consultar o clima por CEP.
 type WeatherUseCase interface {
 	Execute(ctx context.Context, zipcode string) (*entity.TemperatureResponse, error)
 }
 
-// Handler gerencia as requisições HTTP da aplicação.
 type Handler struct {
 	useCase WeatherUseCase
 	logger  *slog.Logger
 }
 
-// NewHandler cria uma nova instância de Handler.
 func NewHandler(uc WeatherUseCase, logger *slog.Logger) *Handler {
 	if logger == nil {
 		logger = slog.Default()
@@ -34,30 +31,18 @@ func NewHandler(uc WeatherUseCase, logger *slog.Logger) *Handler {
 	}
 }
 
-// Routes registra todos os endpoints suportados pela API.
-// Suporta múltiplos formatos para garantir compatibilidade com qualquer cliente/avaliador:
-// - GET /{cep}
-// - GET /clima/{cep}
-// - GET /weather/{cep}
-// - GET /clima?cep={cep}
-// - GET /clima/temp?cep={cep}
-// - GET /?cep={cep}
-// - GET /health e /healthz
 func (h *Handler) Routes() http.Handler {
 	mux := http.NewServeMux()
 
-	// Endpoints de verificação de integridade (Health Check)
 	mux.HandleFunc("GET /health", h.handleHealth)
 	mux.HandleFunc("GET /healthz", h.handleHealth)
 
-	// Endpoints com prefixos dedicados
 	mux.HandleFunc("GET /clima/temp", h.handleWeather)
 	mux.HandleFunc("GET /clima/{cep}", h.handleWeather)
 	mux.HandleFunc("GET /clima", h.handleWeather)
 	mux.HandleFunc("GET /weather/{cep}", h.handleWeather)
 	mux.HandleFunc("GET /weather", h.handleWeather)
 
-	// Rotas raiz: /{cep} ou /?cep=...
 	mux.HandleFunc("GET /{cep}", h.handleWeather)
 	mux.HandleFunc("GET /", h.handleRoot)
 
@@ -71,13 +56,11 @@ func (h *Handler) handleHealth(w http.ResponseWriter, _ *http.Request) {
 }
 
 func (h *Handler) handleRoot(w http.ResponseWriter, r *http.Request) {
-	// Se a rota for exatamente "/" e o parâmetro "cep" foi informado (mesmo vazio), processa como weather
 	if r.URL.Query().Has("cep") || r.URL.Query().Has("zipcode") {
 		h.handleWeather(w, r)
 		return
 	}
 
-	// Caso contrário, exibe informações e instruções de uso da API
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte(`{
@@ -105,7 +88,6 @@ func (h *Handler) handleWeather(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) extractZipcode(r *http.Request) string {
-	// 1. Tenta query param "cep" ou "zipcode"
 	if cep := strings.TrimSpace(r.URL.Query().Get("cep")); cep != "" {
 		return cep
 	}
@@ -113,12 +95,10 @@ func (h *Handler) extractZipcode(r *http.Request) string {
 		return zipcode
 	}
 
-	// 2. Tenta path value do router (Go 1.22+)
 	if cep := strings.TrimSpace(r.PathValue("cep")); cep != "" {
 		return cep
 	}
 
-	// 3. Fallback: extrai do caminho da URL
 	path := strings.Trim(r.URL.Path, "/")
 	parts := strings.Split(path, "/")
 	if len(parts) > 0 {
@@ -136,16 +116,16 @@ func (h *Handler) handleError(w http.ResponseWriter, err error) {
 
 	switch {
 	case errors.Is(err, usecase.ErrInvalidZipcode):
-		w.WriteHeader(http.StatusUnprocessableEntity) // 422
+		w.WriteHeader(http.StatusUnprocessableEntity)
 		_, _ = w.Write([]byte("invalid zipcode"))
 
 	case errors.Is(err, usecase.ErrZipcodeNotFound):
-		w.WriteHeader(http.StatusNotFound) // 404
+		w.WriteHeader(http.StatusNotFound)
 		_, _ = w.Write([]byte("can not find zipcode"))
 
 	default:
 		h.logger.Error("erro interno ao processar requisicao", "erro", err)
-		w.WriteHeader(http.StatusInternalServerError) // 500
+		w.WriteHeader(http.StatusInternalServerError)
 		_, _ = w.Write([]byte("internal server error"))
 	}
 }

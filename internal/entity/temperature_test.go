@@ -6,7 +6,6 @@ import (
 )
 
 func TestConvertTemperature_OfficialExample(t *testing.T) {
-	// Cenário 1 oficial: 28.5 °C -> 83.3 °F e 301.65 K
 	got := ConvertTemperature(28.5)
 
 	if got.TempC != 28.5 {

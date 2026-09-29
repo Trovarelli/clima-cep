@@ -16,35 +16,28 @@ import (
 const defaultBaseURL = "https://viacep.com.br"
 
 var (
-	// ErrZipcodeNotFound é retornado quando o CEP não é encontrado na base de dados do ViaCEP.
 	ErrZipcodeNotFound = errors.New("can not find zipcode")
-	// ErrUpstreamError é retornado quando ocorre um erro de comunicação ou resposta inválida do ViaCEP.
-	ErrUpstreamError = errors.New("erro de comunicacao com o viacep")
+	ErrUpstreamError   = errors.New("erro de comunicacao com o viacep")
 )
 
-// Location representa a localidade retornada pelo ViaCEP.
 type Location struct {
 	City  string `json:"city"`
 	State string `json:"state"`
 }
 
-// HTTPClient define a interface para o cliente HTTP, facilitando testes com mocks.
 type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-// ClientInterface define o contrato para busca de localização por CEP.
 type ClientInterface interface {
 	GetLocation(ctx context.Context, zipcode string) (*Location, error)
 }
 
-// Client é o cliente para consulta à API do ViaCEP.
 type Client struct {
 	httpClient HTTPClient
 	baseURL    string
 }
 
-// NewClient cria uma nova instância de Client para o ViaCEP.
 func NewClient(httpClient HTTPClient, baseURL string) *Client {
 	if httpClient == nil {
 		httpClient = &http.Client{Timeout: 10 * time.Second}
@@ -80,7 +73,6 @@ func (b *flexibleBool) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// GetLocation busca a cidade e estado correspondentes a um CEP de 8 dígitos.
 func (c *Client) GetLocation(ctx context.Context, zipcode string) (*Location, error) {
 	endpoint, err := url.JoinPath(c.baseURL, "ws", zipcode, "json")
 	if err != nil {
