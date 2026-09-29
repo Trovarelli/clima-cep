@@ -85,7 +85,7 @@ Para garantir compatibilidade universal com correções automatizadas e ferramen
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/SEU_USUARIO/clima-cep.git
+git clone https://github.com/Trovarelli/clima-cep.git
 cd clima-cep
 
 # 2. Configure a variável de ambiente com sua chave da WeatherAPI
