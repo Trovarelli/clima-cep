@@ -8,21 +8,20 @@ Projeto desenvolvido como parte do desafio técnico da pós-graduação **Go Exp
 
 > **Endereço do Serviço em Produção:**
 > ```
-> https://clima-cep-XXXXXX.us-central1.run.app
+> https://clima-cep-600897903509.us-central1.run.app
 > ```
-> *(Substitua pela URL gerada após o deploy no seu projeto do GCP, conforme instruções abaixo)*
 
 ### Exemplos de Chamada em Produção
 
 ```bash
 # Cenário de Sucesso (200 OK)
-curl -s "https://clima-cep-XXXXXX.us-central1.run.app/clima/01001000"
+curl -s "https://clima-cep-600897903509.us-central1.run.app/clima/01001000"
 
 # Cenário de CEP com formato inválido (422 Unprocessable Entity)
-curl -i "https://clima-cep-XXXXXX.us-central1.run.app/clima/1234567"
+curl -i "https://clima-cep-600897903509.us-central1.run.app/clima/1234567"
 
 # Cenário de CEP inexistente (404 Not Found)
-curl -i "https://clima-cep-XXXXXX.us-central1.run.app/clima/99999999"
+curl -i "https://clima-cep-600897903509.us-central1.run.app/clima/99999999"
 ```
 
 ---
