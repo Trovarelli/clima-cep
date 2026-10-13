@@ -138,6 +138,7 @@ docker compose up --build
 
 O projeto conta com uma suíte completa de testes automatizados com mocks para isolar chamadas de rede e garantir 100% de repetibilidade.
 
+### 1. Executando os testes diretamente com Go
 ```bash
 # Executar todos os testes
 go test ./...
@@ -147,6 +148,15 @@ go test -v ./...
 
 # Executar exibindo o relatório de cobertura de código
 go test -v -cover ./...
+```
+
+### 2. Executando os testes via Docker (sem necessidade de Go instalado)
+```bash
+# No Linux / macOS:
+docker run --rm -v "$PWD:/app" -w /app golang:1.24-alpine go test -v -cover ./...
+
+# No Windows (PowerShell):
+docker run --rm -v "${PWD}:/app" -w /app golang:1.24-alpine go test -v -cover ./...
 ```
 
 ### O que os testes cobrem:
